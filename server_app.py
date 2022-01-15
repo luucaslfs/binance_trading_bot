@@ -1,7 +1,7 @@
 import pandas as pd 
-from tdqm import tdqm
+#from tdqm import tdqm
 from sqlalchemy import create_engine
-from binance.client import Client
+from binance import Client
 from binance import BinanceSocketManager
 
 client = Client()
