@@ -28,3 +28,4 @@
 *.sql
 *.sqlite
 banco.db
+Cryptoprices.db
