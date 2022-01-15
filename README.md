@@ -1,4 +1,4 @@
-# A simple trading BOT (using Binance APT)
+# A simple trading BOT (using Binance API)
 
 
 A simple trading bot i will try to deploy
