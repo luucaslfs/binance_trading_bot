@@ -2,7 +2,6 @@ import pandas as pd
 from binance.client import Client
 import asyncio
 from binance import BinanceSocketManager, AsyncClient
-nest_asyncio.apply()
 
 from sqlalchemy import create_engine
 
@@ -14,7 +13,7 @@ symbols = [x['symbol'] for x in info['symbols']]
 exclude = ['UP','DOWN','BEAR','BULL']
 non_lev = [symbol for symbol in symbols if all(excludes not in symbol for excludes in exclude)]
 relevant = [symbol for symbol in non_lev if symbol.endswith('USDT')]
-multi = [i.lower + '@trade' for i in relevant]
+multi = [i.lower() + '@trade' for i in relevant]
 
 def createframe(msg):
     df = pd.DataFrame([msg['data']])

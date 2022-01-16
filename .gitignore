@@ -29,3 +29,6 @@
 *.sqlite
 banco.db
 Cryptoprices.db
+CryptoDB.db
+api_keys.py
+CryptoDB.db-journal
