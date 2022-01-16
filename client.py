@@ -1,11 +1,46 @@
-from cmath import sin
-import sqlalchemy
+import asyncio
+from binance import BinanceSocketManager, AsyncClient
+import datetime as dt
+from sqlalchemy import create_engine
 import pandas as pd
 from binance.client import Client
+from api_keys import api_key, secret_key
 
-client = Client(api_key, api_secret)
-engine = sqlalchemy.create_engine('sqlite:///BTCUSDTstream.db')
-df = pd.read_sql('BTCUSDT', engine)
+client = Client(api_key, secret_key)
+engine = create_engine('sqlite:///CryptoDB.db')
+symbols = pd.read_sql('SELECT name FROM sqlite_master WHERE type ="table"', engine).name.to_list()
+
+# Pulling prices from last n minutes
+def qry(symbol, lookback:int):
+    now = dt.datetime.now() - dt.timedelta(hours=1) # binance time
+    before = now - dt.timedelta(minutes=lookback)
+    qry_str = f"""SELECT * FROM '{symbol}' WHERE TIME >= '{before}'"""
+    return pd.read_sql(qry_str, engine)
+
+print(qry('BTCUSDT', 5))
+
+# Calculating acumulative return/losses
+rets = []
+for symbol in symbols:
+    prices = qry(symbol,3).Price
+    cumret = (prices.pct_change() + 1).prod() - 1
+    rets.append(cumret)
+
+# Calculating LOT_SIZES based in investment_amt and top_coin prize
+investment_amt = 300
+top_coin = symbols[rets.index(max(rets))]
+info = client.get_symbol_info(symbol=top_coin)
+Lotsize = float([i for i in info['filters'] if i['filterType'] == 'LOT_SIZE'][0]['minQty'])
+prize = float(client.get_symbol_ticker(symbol=top_coin)['price'])
+buy_quantity = round(investment_amt/prize, len(str(Lotsize).split('.')[1]))
+
+# Buying condition
+free_usd = [i for i in client.get_account()['balances'] if i['asset'] == 'USDT'][0]['free']
+if float(free_usd) > investment_amt:
+    order = client.create_order(symbol=top_coin,side='BUY',type='MARKET',quantity=buy_quantity)
+
+
+print(prize)
 
 #trendfollowing
 #if the crypto was rising by x % -> BUY
@@ -38,4 +73,4 @@ def strategy(entry, lookback, qty, open_position=False):
 
 # Testing
 
-strategy(0.001, 60, 0.001)
+#strategy(0.001, 60, 0.001)
