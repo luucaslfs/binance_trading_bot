@@ -32,3 +32,5 @@ Cryptoprices.db
 CryptoDB.db
 api_keys.py
 CryptoDB.db-journal
+test_nb.ipynb
+apikeys.ipynb
