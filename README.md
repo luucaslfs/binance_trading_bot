@@ -1,7 +1,7 @@
-# A simple trading BOT (using Binance API)
+# A simple trading BOT made with Binance API
 
 
-A simple trading bot i will try to deploy
+A simple trading bot.
 
 server_app pushes data and stores it in a sqlite database
 trading_script can be used w/ cronjob or windows scheduler to take action
